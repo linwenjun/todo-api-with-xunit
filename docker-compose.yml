@@ -1,0 +1,16 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:7.0.5-ubi9
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./volumes/mongodb:/data/db
+
+volumes:
+  mongodb_data:
+    driver: local
