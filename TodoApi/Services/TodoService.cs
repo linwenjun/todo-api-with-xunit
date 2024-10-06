@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using TodoApi.Models;
 
@@ -21,5 +22,13 @@ public class TodoService
     }
     public int add(int number2, int number1) {
         return number1 + number2;
+    }
+
+    internal async Task CompleteAsync(bool v)
+    {
+        await _todosCollection.UpdateManyAsync(
+            new BsonDocument("isComplete", !v), 
+            new BsonDocument("$set", new BsonDocument("isComplete", v))
+        );
     }
 }

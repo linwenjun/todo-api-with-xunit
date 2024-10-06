@@ -5,10 +5,13 @@ using System.Net;
 using Testcontainers.MongoDb;
 using TodoApi.Models;
 using System.Text.Json;
+using TodoApi.Controllers;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace TodoApi.Tests.ApiTest;
 
-public class GetTodosTest: IClassFixture<WebApplicationFactory<Program>>
+public class GetTodosTest : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
     private readonly IMongoCollection<Todo> _collection;
@@ -54,9 +57,9 @@ public class GetTodosTest: IClassFixture<WebApplicationFactory<Program>>
     {
         // Arrange
         var todos = new List<Todo> {
-            new Todo { Name = "Test Todo 1", IsComplete = true },
-            new Todo { Name = "Test Todo 2", IsComplete = false },
-            new Todo { Name = "Test Todo 3", IsComplete = false }
+            new Todo { name = "Test Todo 1", isComplete = true },
+            new Todo { name = "Test Todo 2", isComplete = false },
+            new Todo { name = "Test Todo 3", isComplete = false }
         };
         await _collection.InsertManyAsync(todos);
 
@@ -72,6 +75,39 @@ public class GetTodosTest: IClassFixture<WebApplicationFactory<Program>>
         var returnedTodos = System.Text.Json.JsonSerializer.Deserialize<List<Todo>>(content);
         Assert.NotNull(returnedTodos);
         Assert.Equal(3, returnedTodos.Count);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task PutTodos_All_ITems_ShouldBeComplete(bool tobeComplete)
+    {
+
+        var todos = new List<Todo> {
+            new Todo { name = "Test Todo 1", isComplete = true },
+            new Todo { name = "Test Todo 2", isComplete = false },
+            new Todo { name = "Test Todo 3", isComplete = false }
+        };
+        await _collection.InsertManyAsync(todos);
+
+        // when
+        // Arrange
+        var request = new CompleteStatusRequest { isComplete = tobeComplete };
+        var jsonContent = JsonConvert.SerializeObject(request);
+        var putContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        var putResponse = await _client.PutAsync("/api/todos/complete", putContent);
+
+        // assert nocontent status code
+        Assert.Equal(HttpStatusCode.NoContent, putResponse.StatusCode);
+
+        // then
+        var response = await _client.GetAsync("/api/todos");
+        var content = await response.Content.ReadAsStringAsync();
+        var returnedTodos = System.Text.Json.JsonSerializer.Deserialize<List<Todo>>(content);
+        // Assert.NotNull(returnedTodos);
+        Assert.Equal(tobeComplete, returnedTodos[0].isComplete);
+        Assert.Equal(tobeComplete, returnedTodos[1].isComplete);
+        Assert.Equal(tobeComplete, returnedTodos[2].isComplete);
     }
 
     public void Dispose()

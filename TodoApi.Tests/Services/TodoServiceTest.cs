@@ -51,8 +51,8 @@ public class TodoServiceTest: IAsyncLifetime
     {
 
         var todos = new List<Todo> {
-            new Todo { Name = "Test Todo 1", IsComplete = true },
-            new Todo { Name = "Test Todo 2", IsComplete = false }
+            new Todo { name = "Test Todo 1", isComplete = true },
+            new Todo { name = "Test Todo 2", isComplete = false }
         };
 
         await _collection.InsertManyAsync(todos);

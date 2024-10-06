@@ -20,7 +20,18 @@ namespace TodoApi.Controllers
         {
             return Ok(await _todoService.GetAllAsync());
         }
+        
+        [HttpPut("complete")]
+        public async Task<ActionResult> SetCompleteStatusForAll(CompleteStatusRequest request)
+        {
+            // await _todoService.CompleteAsync(id);
+            await _todoService.CompleteAsync(request.isComplete);
+            return NoContent();
+        }
     }
 
-
+    public class CompleteStatusRequest
+    {
+        public bool isComplete { get; set;}
+    }
 }
