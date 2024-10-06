@@ -39,7 +39,7 @@ public class GetTodosTest: IClassFixture<WebApplicationFactory<Program>>
         {
             builder.ConfigureAppConfiguration((context, config) =>
             {
-                config.AddInMemoryCollection(new Dictionary<string, string>
+                config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     {"TodosDatabase:ConnectionString", _mongoContainer.GetConnectionString()},
                     {"TodosDatabase:DatabaseName", _databaseName},
