@@ -5,15 +5,19 @@ using TodoApi.Models;
 
 namespace TodoApi.Services;
 
-public class TodoService
+public class TodoService: ITodoService
 {
      private readonly IMongoCollection<Todo> _todosCollection;
-     public TodoService(IOptions<TodoStoreDatabaseSettings> todoStoreDatabaseSettings) {
+
+     private readonly ILogger<TodoService> _Logger;
+     public TodoService(IOptions<TodoStoreDatabaseSettings> todoStoreDatabaseSettings, ILogger<TodoService> logger) {
         var mongoClient = new MongoClient(todoStoreDatabaseSettings.Value.ConnectionString);
 
         var mongoDatabase = mongoClient.GetDatabase(todoStoreDatabaseSettings.Value.DatabaseName);
 
         _todosCollection = mongoDatabase.GetCollection<Todo>(todoStoreDatabaseSettings.Value.TodoItemsCollectionName);
+
+        _Logger = logger;
     }
 
     public async Task<List<Todo>> GetAllAsync()
@@ -24,7 +28,7 @@ public class TodoService
         return number1 + number2;
     }
 
-    internal async Task CompleteAsync(bool v)
+    public async Task CompleteAsync(bool v)
     {
         await _todosCollection.UpdateManyAsync(
             new BsonDocument("isComplete", !v), 

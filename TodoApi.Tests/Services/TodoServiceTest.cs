@@ -1,4 +1,5 @@
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Moq;
@@ -42,8 +43,10 @@ public class TodoServiceTest: IAsyncLifetime
             TodoItemsCollectionName = "Todos"
         });
 
+        var mockLogger = new Mock<ILogger<TodoService>>();
+
         // 初始化 TodoService
-        _todoService = new TodoService(mockSettings.Object);
+        _todoService = new TodoService(mockSettings.Object, mockLogger.Object);
     }
     
     [Fact]

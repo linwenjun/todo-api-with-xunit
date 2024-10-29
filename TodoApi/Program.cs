@@ -11,7 +11,7 @@ builder.Services.Configure<TodoStoreDatabaseSettings>(
     builder.Configuration.GetSection("TodosDatabase")
 );
 
-builder.Services.AddSingleton<TodoService>();
+builder.Services.AddSingleton<ITodoService, TodoService>();
 
 builder.Services.AddControllers();
 
