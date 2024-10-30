@@ -28,11 +28,11 @@ public class TodoServiceTest: IAsyncLifetime
 
         _mongoContainer.StartAsync().Wait();
 
-        var _mongoClient = new MongoClient(_mongoContainer.GetConnectionString());
+        var mongoClient = new MongoClient(_mongoContainer.GetConnectionString());
 
-        var _database = _mongoClient.GetDatabase(_databaseName);
+        var database = mongoClient.GetDatabase(_databaseName);
 
-        _collection = _database.GetCollection<Todo>("Todos");
+        _collection = database.GetCollection<Todo>("Todos");
         
         var mockSettings = new Mock<IOptions<TodoStoreDatabaseSettings>>();
         
